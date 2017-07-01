@@ -1,0 +1,48 @@
+---
+- hosts: all 
+  vars:
+    go_version: "1.8.3"
+    go_user: "go"
+    go_home: "/home/go"
+    go_install_location: "/usr/local/bin"
+    ansible_become: true
+    ansible_become_user: root
+  tasks:
+  - name: Download GoLang
+    get_url: 
+      url: https://storage.googleapis.com/golang/go{{ go_version }}.linux-amd64.tar.gz 
+      dest: /tmp/golang.tar.gz
+      mode: 0755
+  - name: Extract GoLang
+    unarchive: 
+      src: /tmp/golang.tar.gz 
+      dest: "{{ go_install_location }}" 
+      remote_src: True 
+  - name: Add Go Dev User
+    user:
+      name: "{{ go_user }}"
+      comment: "Go Dev User"
+      shell: /bin/bash
+  - name: Create Go Playground
+    file: 
+      path: "{{ go_home }}/go"
+      state: directory
+      mode: 0755 
+      owner: "{{ go_user }}"
+  - name: Edit Go .bash_profile
+    lineinfile:
+      path: "{{ go_home }}/.bash_profile"
+      state: present
+      line: "export GOPATH=$GOHOME/go"
+  - name: Add Go to .bash_profile
+    lineinfile:
+      path: "{{ go_home }}/.bash_profile"
+      state: present
+      line: "export PATH=$PATH:{{ go_install_location }}/go/bin"
+  - name: Add GOROOT to .bash_profile
+    lineinfile:
+      path: "{{ go_home }}/.bash_profile"
+      state: present
+      line: "export GOROOT={{ go_install_location }}/go"
+
+...
