@@ -9,6 +9,5 @@ Update go_version as and when new releases are available.
 # How To
 ```
 cd vagrant
-vagrant init
 vagrant up --provision
 ```
